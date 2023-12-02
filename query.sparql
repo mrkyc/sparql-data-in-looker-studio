@@ -1,0 +1,28 @@
+PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>
+PREFIX dbpedia2: <http://dbpedia.org/property/>
+
+SELECT
+    ?song
+    ?artist
+    ?artistOrigin
+    ?album
+    MAX(?durationInSeconds) AS ?durationInSeconds
+    MAX(?durationInMinutes) AS ?durationInMinutes
+    MAX(?label) AS ?label
+    MAX(?description) AS ?description
+WHERE {
+    ?song rdf:type dbpedia-owl:Song .
+    ?song dbpedia2:artist ?artist .
+    ?song dbpedia2:album ?album .
+    ?song <http://dbpedia.org/ontology/runtime> ?durationInSeconds .
+    ?song <http://dbpedia.org/ontology/Work/runtime> ?runtimeMinutes .
+    ?artist <http://dbpedia.org/property/origin> ?artistOrigin .
+    
+    OPTIONAL {
+        ?song dbpedia2:label ?label .
+        ?song dbpedia2:description ?description .
+    }
+    
+    FILTER (?durationInSeconds > 120)
+    BIND (?durationInSeconds / 60 AS ?durationInMinutes)
+}
